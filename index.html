@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Matriz A.C. Camargo – Rotas (Escopo) & Veículos</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.09);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.70);
+      --line: rgba(255,255,255,0.12);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: rgba(255,255,255,0.18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 28px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: radial-gradient(1200px 800px at 10% 0%, rgba(255,255,255,0.06), transparent 50%),
+                  radial-gradient(1000px 700px at 90% 10%, rgba(255,255,255,0.05), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+    h1 { font-size: 22px; margin: 0 0 8px; letter-spacing: 0.2px; }
+    h2 { font-size: 16px; margin: 0 0 10px; color: var(--text); }
+    p { margin: 0; color: var(--muted); line-height: 1.4; }
+    .wrap { max-width: 1150px; margin: 0 auto; }
+    .top {
+      display: grid; grid-template-columns: 1.4fr 1fr;
+      gap: 16px; align-items: start;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 980px) {
+      .top { grid-template-columns: 1fr; }
+      body { padding: 18px; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
+    label { font-size: 12px; color: var(--muted); display: block; margin: 0 0 6px; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline: none;
+    }
+    select:focus, input[type="text"]:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(255,255,255,0.08); }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.06) inset;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .btn {
+      cursor: pointer;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .btn:hover { background: rgba(255,255,255,0.10); }
+    .section { margin-top: 14px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .table th, .table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .table th {
+      text-align: left;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.06);
+    }
+    .table td { font-size: 13px; color: var(--text); }
+    .muted { color: var(--muted); }
+    .kpi {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .kpi .pill { background: rgba(255,255,255,0.05); }
+    .footnote {
+      margin-top: 10px; font-size: 12px; color: var(--muted);
+      border-top: 1px dashed var(--line);
+      padding-top: 10px;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+    @media (max-width: 980px) { .split { grid-template-columns: 1fr; } }
+    .cardTitle {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom: 6px;
+    }
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .badge {
+      display:inline-flex; align-items:center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .card2 {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius2);
+      padding: 14px;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .empty {
+      padding: 14px;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(0,0,0,0.12);
+    }
+    .checkbox {
+      display:flex; align-items:center; gap:8px;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: rgba(255,255,255,0.85);
+    }
+    /* Logos (lado direito do topo) */
+    .rightTop {
+      display:flex; align-items:flex-start; gap:10px;
+    }
+    .logos {
+      display:flex; align-items:center; gap:10px;
+      padding: 6px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+    }
+    .logoImg {
+      max-height: 44px;
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      display:block;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 4px;
+    }
+    @media (max-width: 720px) {
+      .rightTop { flex-wrap: wrap; justify-content:flex-end; }
+      .logos { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="card">
+        <div class="cardTitle">
+          <div>
+            <h1>Matriz A.C. Camargo – Rotas & Veículos</h1>
+            <p>Filtros por <b>cor do carro</b> e <b>veículo</b>. Dados extraídos da matriz técnica (sem alteração).</p>
+          </div>
+
+          <div class="rightTop">
+            <div class="logos" aria-label="Logomarcas">
+              <img class="logoImg" src="data:image/png;base64,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" alt="A.C. Camargo Cancer Center" />
+              <img class="logoImg" src="data:image/png;base64,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" alt="TransTour Logística" />
+            </div>
+            <span class="badge mono" id="metaInfo"></span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Cor do carro (Operação)</label>
+            <select id="filterCar">
+              <option value="">(Todas)</option>
+            </select>
+          </div>
+          <div>
+            <label>Veículo</label>
+            <select id="filterVehicle">
+              <option value="">(Todos)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Busca (setor, itinerário, abrangência, unidade/endereço)</label>
+            <input id="filterSearch" type="text" placeholder="Ex.: Nutrição, Rota Única, Itaim, AP..." />
+            <div class="checkbox">
+              <input id="onlyWithDetails" type="checkbox" />
+              <span>Somente veículos com <b>Detalhes</b> preenchidos (aba VEÍCULOS)</span>
+            </div>
+          </div>
+          <div>
+            <label>Ações</label>
+            <div class="actions">
+              <button class="btn" id="btnClear">Limpar filtros</button>
+              <button class="btn" id="btnPrint">Imprimir / PDF</button>
+              <button class="btn" id="btnExport">Exportar CSV (rotas filtradas)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi" id="kpis"></div>
+
+        <div class="footnote">
+          Dica: você pode anexar o link público desta página no POP como <b>Anexo (HTML)</b> para consulta rápida das rotas e responsabilidades.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Legenda de Unidades (Anexo I)</h2>
+        <p>Mapeamento de siglas e endereços, conforme matriz.</p>
+        <div class="section" id="unitsBlock"></div>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card">
+        <h2>1) Escopo – Rotas / Atendimento</h2>
+        <p class="muted">Período, setores-chave, itinerário, abrangência e unidade/endereço (aba ESCOPO).</p>
+        <div class="section" id="routesBlock"></div>
+      </div>
+
+      <div class="card">
+        <h2>2) Veículos – Necessidade & Detalhes</h2>
+        <p class="muted">Necessidade (ex.: refrigerado) e detalhes operacionais (aba VEÍCULOS).</p>
+        <div class="section" id="vehiclesBlock"></div>
+      </div>
+    </div>
+
+    <div class="footnote">
+      <b>Fonte:</b> Matriz Técnica 2026 (A.C. Camargo). <b>Regra:</b> atualizações devem ser feitas na matriz e esta página regenerada para manter rastreabilidade.
+    </div>
+  </div>
+
+<script>
+const DATA = {"meta": {"source": "A.C Camargo_Matriz Técnica_2026.xlsx", "generated_on": "2026-02-09 17:58"}, "routes": [{"operacao": "Carro Amarelo", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda á Domingo (08:00 as 18:00)", "setores": "Nutrição", "itinerario": "Mapa", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, PM, Itaim"}, {"operacao": "Carro Azul", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda á Sexta (07:00 ás 19:00)", "setores": "Almox/Caf/Estoque QT", "itinerario": "Mapa", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, CA Ass, CA Adm, PM, Itaim"}, {"operacao": "Carro (Moto) Laranja", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda á Sábado (08:00 ás 18:00)", "setores": "Banco de Sangue", "itinerario": "Rota Única", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, CA Ass"}, {"operacao": "Carro Marrom", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda á Domingo (07:00 ás 07:00)", "setores": "CME 24h", "itinerario": "Rota Única", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, PM"}, {"operacao": "Carro Verde", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda á Sexta (06:00 as 18:00)", "setores": "Anatomia/Faturamento", "itinerario": "Mapa", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, CA Adm, PM"}, {"operacao": "Moto Amarelo", "categoria": "Motociclista", "veiculo": "Moto", "periodo": "Segunda a Sexta (07:00 as 18:00)", "setores": "Quimioterapia", "itinerario": "Rota Única", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, PM"}, {"operacao": "Carro Vermelho", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda a Sexta (07:00 as 19:00)", "setores": "Demandas diversas Plataforma", "itinerario": "Sob demanda", "abrangencia": "São Paulo *", "unidade_enderecos": "* AP, TT, Medic, CA Ass, CA Adm, PM, Itaim + São Paulo"}, {"operacao": "Moto Vermelha", "categoria": "Motociclista", "veiculo": "Moto", "periodo": "Segunda a Sexta (08:00 as 18:00)", "setores": "Demandas diversas Plataforma", "itinerario": "Sob demanda", "abrangencia": "São Paulo *", "unidade_enderecos": "* AP, TT, Medic, CA Ass, CA Adm, PM, Itaim + São Paulo"}, {"operacao": "Moto Vermelha", "categoria": "Motociclista", "veiculo": "Moto", "periodo": "Segunda a Sexta (08:00 as 18:00)", "setores": "Demandas diversas Plataforma", "itinerario": "Sob demanda", "abrangencia": "São Paulo *", "unidade_enderecos": "* AP, TT, Medic, CA Ass, CA Adm, PM, Itaim + São Paulo"}, {"operacao": "Moto Vermelha", "categoria": "Motociclista", "veiculo": "Moto", "periodo": "Segunda a Sexta (08:00 as 18:00)", "setores": "Demandas diversas Plataforma", "itinerario": "Sob demanda", "abrangencia": "São Paulo *", "unidade_enderecos": "* AP, TT, Medic, CA Ass, CA Adm, PM, Itaim + São Paulo"}, {"operacao": "Carro Lilás", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Terça e Quinta (ás 06:00)", "setores": "(COE) Quimioterapia", "itinerario": "Rota Única", "abrangencia": "S. J. dos Campos", "unidade_enderecos": "Rua Euclides da Cunha, 263 - São José dos Campos | SP"}, {"operacao": "Carro Jacareí", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Segunda a Sexta (ás 06:00)", "setores": "(COE) Quimioterapia", "itinerario": "Rota Única", "abrangencia": "Jacareí", "unidade_enderecos": "Rua Professor Job Aires Dias, 76 - Jacareí | SP"}, {"operacao": "CarroTaubaté", "categoria": "Motorista", "veiculo": "Fiorino", "periodo": "Quarta e Sexta (ás 06:00)", "setores": "(COE) Quimioterapia", "itinerario": "Rota Única", "abrangencia": "Taubaté", "unidade_enderecos": "Rua Mal. Artur da Costa e Silva, 559 - 2° andar - Centro"}, {"operacao": "Caminhão Fixo", "categoria": "Motorista", "veiculo": "Caminhão", "periodo": "1 dia da Semana (á definir)", "setores": "Todos", "itinerario": "Sob demanda", "abrangencia": "Centro", "unidade_enderecos": "* AP, TT, Medic, CA Ass, CA Adm, PM, Itaim"}, {"operacao": "Motorista Executivo e Logistico", "categoria": "Motorista", "veiculo": "Sedan Premium", "periodo": "Segunda á Sexta (08:00 as 18:00)", "setores": "Todos", "itinerario": "Sob demanda", "abrangencia": "São Paulo *", "unidade_enderecos": "* AP, TT, Medic, CA Ass, CA Adm, PM, Itaim + São Paulo"}], "vehicles": [{"operacao": "Carro Amarelo", "veiculo": "Fiorino", "necessidade": "Refrigerado", "detalhes": "📌 Executar transporte de nutrição hospitalar: alimentos, diétas, itens pereciveis e de consumo diário. 📌 Necessidade refrigeração em todas as movimentações (abaixo 5º C) 📌 Controle de temperatura do veículo 📌 Controle de higienização do veículo📌"}, {"operacao": "Carro Azul", "veiculo": "Fiorino", "necessidade": "Comum", "detalhes": "📌 Executar transporte de itens hospitalares em geral: materiais; medicamentos; nutrição seca  etc. 📌 Procedimentos de limpeza obrigatórios após cada turno ou conforme cronograma com registro das higienizações. 📌 Licenciamento em dia, seguro, inspeção sanitária (se aplicável)"}, {"operacao": "Carro (Moto) Laranja", "veiculo": "Fiorino (Moto)", "necessidade": "Divisória Limpo e Sujo", "detalhes": "📌 Executar o transporte de bolsas de sangue e plaquetas por aférese, retiradas de doação. Movimentadas em maletas térmicas em mantas em temperatura ambiente, com placa gelada. 📌 Precisam ser movimentadas em até 1 hora após a doação."}, {"operacao": "Carro Marrom", "veiculo": "Fiorino", "necessidade": "Divisória Limpo e Sujo", "detalhes": "📌 Executar o transporte contínuo e seguro de materiais sujos e esterilizados do CME entre as unidades do AC, conforme necessidades. 📌 Deve possuir compartimentos separados: Materiais sujos/contaminados e Materiais limpos/esterilizados. 📌 Procedimentos de limpeza obrigatórios após cada turno ou conforme cronograma com registro das higienizações. 📌 Licenciamento em dia, seguro, inspeção sanitária (se aplicável). 📌 Sinalização e Placa anexo no veículo."}, {"operacao": "Carro Verde", "veiculo": "Fiorino (Moto)", "necessidade": "Comum", "detalhes": "📌 Realiza transporte diários de documentos (Faturamento) 📌 Lâminas de Anatomia Patológica 📌Biópsias e  📌"}, {"operacao": "Moto Amarelo", "veiculo": "Moto", "necessidade": "Comum", "detalhes": "📌 Executar o transporte contínuo e seguro de medicamentos quimioterápicos entre as unidades do AC, conforme necessidades. 📌 Licenciamento em dia, seguro, inspeção sanitária (se aplicável)."}, {"operacao": "Carro Vermelho", "veiculo": "Fiorino", "necessidade": "Comum", "detalhes": "📌 Executar o transportes de materiais,  medicamentos, insumos e eletrónicos, conforme necessidade e abertura de chamados internos  📌 Procedimentos de limpeza obrigatórios após cada turno ou conforme cronograma com registro das higienizações. 📌 Licenciamento em dia, seguro, inspeção sanitária (se aplicável). 📌 Sinalização e Placa anexo no veículo."}, {"operacao": "Moto Vermelha", "veiculo": "Moto", "necessidade": "Comum", "detalhes": ""}, {"operacao": "Moto Vermelha", "veiculo": "Moto", "necessidade": "Comum", "detalhes": ""}, {"operacao": "Moto Vermelha", "veiculo": "Moto", "necessidade": "Comum", "detalhes": ""}, {"operacao": "Carro Lilás", "veiculo": "Fiorino", "necessidade": "Comum", "detalhes": "📌 Retirada de material biológico (lâminas, bloco de parafina).\n📌 Materiais já estarão devidamente acondicionados.\n📌Documento que será emitido pelo AC Camargo não é a nota de remessa convencional.\n📌Veículo: Fiorino\n📌Documentação necessária: Autorização para transportar Medicamentos e Insumos Farmacêuticos."}, {"operacao": "Carro Jacareí", "veiculo": "Fiorino", "necessidade": "Comum", "detalhes": "📌 Retirada de material biológico (lâminas, bloco de parafina).\n📌 Materiais já estarão devidamente acondicionados.\n📌Documento que será emitido pelo AC Camargo não é a nota de remessa convencional.\n📌Veículo: Fiorino\n📌Documentação necessária: Autorização para transportar Medicamentos e Insumos Farmacêuticos."}, {"operacao": "CarroTaubaté", "veiculo": "Fiorino", "necessidade": "Comum", "detalhes": "📌 Retirada de material biológico (lâminas, bloco de parafina).\n📌 Materiais já estarão devidamente acondicionados.\n📌Documento que será emitido pelo AC Camargo não é a nota de remessa convencional.\n📌Veículo: Fiorino\n📌Documentação necessária: Autorização para transportar Medicamentos e Insumos Farmacêuticos."}, {"operacao": "Caminhão", "veiculo": "Caminhão", "necessidade": "Com Plataforma", "detalhes": "📌 Movimentação de itens volumosos, pesados e sensíveis, como equipamentos clínicos, hospitalares e mobílias. 📌 Transporte entre as unidades do AC Camargo. 📌 Serviços realizados em um dia da semana (á definir)"}, {"operacao": "Motorista", "veiculo": "Carro", "necessidade": "Sedan/SUV Premium", "detalhes": "📌 Movimentação de equipamentos clínicos, hospitalares e mobílias. 📌 Transporte de materiais e medicamentos📌 Transporte de rotinas de faturamento📌 Transporte de eletrônicos (TI) 📌  Conhecimento em processos em cartório 📌 Transfer de Diretoria 📌 Diligências em imóveis da Fundação 📌 Envios de declaração de Óbito (PRO AIM) 📌Retiradas de matrículas 📌 Protocolos em Vigilância Sanitária 📌 Coletas de assinaturas com Conselheiros do AC 📌 Transporte Corporativo 📌 Coletas em fornecedores."}], "units": [{"sigla": "*", "unidade": "", "endereco": ""}, {"sigla": "Abrev.", "unidade": "Unidades/ End.", "endereco": "Endereços"}, {"sigla": "AP", "unidade": "Antonio Prudente", "endereco": "R. Tamandaré, 766 - Liberdade"}, {"sigla": "TT", "unidade": "Tamandaré", "endereco": "R. Tamandaré, 753 - Liberdade"}, {"sigla": "Medic", "unidade": "Medic", "endereco": "R. Tamandaré, 811 - Liberdade"}, {"sigla": "Cipe", "unidade": "CIPE", "endereco": "R. Taguá, 440 - Liberdade"}, {"sigla": "CA Assis", "unidade": "Castro Alves Assis.", "endereco": "R. Castro Alves, 131 - Liberdade"}, {"sigla": "CA ADM", "unidade": "Castro Alves Adm", "endereco": "R. Castro Alves, 63 - Liberdade"}, {"sigla": "PM", "unidade": "Pires da Mota", "endereco": "R. Pires da Mota, 1167 - Liberdade"}, {"sigla": "Itaim", "unidade": "Itaim", "endereco": "R. Brig. Luis Antonio, 5013 - Jd Paulista"}, {"sigla": "SP", "unidade": "São Paulo", "endereco": "Cidade e/ou Região Metropolitana"}]};
+const $ = (id) => document.getElementById(id);
+
+// Cores de referência para o "dot" (pode ajustar depois se desejar)
+const COLOR_HINTS = {
+  "Carro Amarelo": "#f7c948",
+  "Moto Amarelo": "#f7c948",
+  "Carro Azul": "#4aa3ff",
+  "Carro Verde": "#38d39f",
+  "Carro Vermelho": "#ff5b6e",
+  "Moto Vermelha": "#ff5b6e",
+  "Carro Marrom": "#b07a52",
+  "Carro Lilás": "#c58cff",
+  "Carro Jacareí": "#2ecc71",
+  "Carro (Moto) Laranja": "#ffb14a",
+  "CarroTaubaté": "#9ad1ff",
+  "Caminhão": "#cbd5e1",
+  "Motorista": "#cbd5e1"
+};
+
+function dotFor(operacao) {
+  const c = COLOR_HINTS[operacao] || "rgba(255,255,255,0.35)";
+  return `<span class="dot" style="background:${c}"></span>`;
+}
+
+function uniq(arr) {
+  return [...new Set(arr)].filter(v => v !== undefined && v !== null && String(v).trim() !== "");
+}
+
+function normalize(t) {
+  return (t || "").toString().toLowerCase();
+}
+
+function currentFilters() {
+  return {
+    car: $("filterCar").value,
+    vehicle: $("filterVehicle").value,
+    search: normalize($("filterSearch").value),
+    onlyWithDetails: $("onlyWithDetails").checked
+  };
+}
+
+function getVehiclesByCar(car) {
+  const list = DATA.vehicles.filter(v => !car || v.operacao === car).map(v => v.veiculo);
+  return uniq(list).sort((a,b) => a.localeCompare(b, "pt-BR"));
+}
+
+function hasDetailsFor(car, vehicle) {
+  return DATA.vehicles.some(v =>
+    (!car || v.operacao === car) &&
+    (!vehicle || v.veiculo === vehicle) &&
+    (v.detalhes && v.detalhes.trim().length > 0)
+  );
+}
+
+function applyFilters() {
+  const f = currentFilters();
+
+  // adjust vehicle list when car changes
+  const vehiclesForCar = getVehiclesByCar(f.car);
+  const vehicleSelect = $("filterVehicle");
+  const current = vehicleSelect.value;
+  vehicleSelect.innerHTML = `<option value="">(Todos)</option>` + vehiclesForCar.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+  if (vehiclesForCar.includes(current)) vehicleSelect.value = current;
+
+  // routes filter
+  let routes = DATA.routes.slice();
+
+  if (f.car) routes = routes.filter(r => r.operacao === f.car);
+  if (f.vehicle) routes = routes.filter(r => r.veiculo === f.vehicle);
+
+  if (f.search) {
+    routes = routes.filter(r => {
+      const hay = normalize([r.periodo, r.setores, r.itinerario, r.abrangencia, r.unidade_enderecos, r.operacao, r.veiculo].join(" | "));
+      return hay.includes(f.search);
+    });
+  }
+
+  if (f.onlyWithDetails) {
+    routes = routes.filter(r => hasDetailsFor(r.operacao, r.veiculo));
+  }
+
+  // vehicles filter (responsibilities)
+  let vehicles = DATA.vehicles.slice();
+  if (f.car) vehicles = vehicles.filter(v => v.operacao === f.car);
+  if (f.vehicle) vehicles = vehicles.filter(v => v.veiculo === f.vehicle);
+  if (f.search) {
+    vehicles = vehicles.filter(v => {
+      const hay = normalize([v.operacao, v.veiculo, v.necessidade, v.detalhes].join(" | "));
+      return hay.includes(f.search);
+    });
+  }
+  if (f.onlyWithDetails) vehicles = vehicles.filter(v => (v.detalhes || "").trim().length > 0);
+
+  renderKpis(routes, vehicles);
+  renderRoutes(routes);
+  renderVehicles(vehicles);
+}
+
+function escapeHtml(str) {
+  return (str || "").toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function renderKpis(routes, vehicles) {
+  const cars = uniq(routes.map(r => r.operacao));
+  const veh = uniq(routes.map(r => r.veiculo));
+  const msg = `
+    <span class="pill">${dotFor($("filterCar").value || "Motorista")} <b>${routes.length}</b> rotas (escopo)</span>
+    <span class="pill"><b>${cars.length}</b> operações</span>
+    <span class="pill"><b>${veh.length}</b> tipos de veículo (escopo)</span>
+    <span class="pill"><b>${vehicles.length}</b> registros de veículos (necessidade/detalhes)</span>
+  `;
+  $("kpis").innerHTML = msg;
+}
+
+function renderRoutes(routes) {
+  if (!routes.length) {
+    $("routesBlock").innerHTML = `<div class="empty">Nenhum registro encontrado para os filtros aplicados.</div>`;
+    return;
+  }
+
+  const rows = routes.map(r => `
+    <tr>
+      <td>${dotFor(r.operacao)} <b>${escapeHtml(r.operacao)}</b><div class="small">${escapeHtml(r.categoria)}</div></td>
+      <td><b>${escapeHtml(r.veiculo)}</b></td>
+      <td>${escapeHtml(r.periodo)}</td>
+      <td>${escapeHtml(r.setores)}</td>
+      <td>${escapeHtml(r.itinerario)}</td>
+      <td>${escapeHtml(r.abrangencia)}</td>
+      <td>${escapeHtml(r.unidade_enderecos)}</td>
+    </tr>
+  `).join("");
+
+  $("routesBlock").innerHTML = `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Operação</th>
+          <th>Veículo</th>
+          <th>Período</th>
+          <th>Setores-chave</th>
+          <th>Itinerário</th>
+          <th>Abrangência</th>
+          <th>Unidade/Endereços</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function renderVehicles(vehicles) {
+  if (!vehicles.length) {
+    $("vehiclesBlock").innerHTML = `<div class="empty">Nenhum registro encontrado para os filtros aplicados.</div>`;
+    return;
+  }
+
+  const cards = vehicles.map(v => `
+    <div class="card2">
+      <div class="cardTitle">
+        <div>
+          <div class="pill">${dotFor(v.operacao)} <b>${escapeHtml(v.operacao)}</b></div>
+          <div style="margin-top:8px;">
+            <div class="small">Veículo</div>
+            <div><b>${escapeHtml(v.veiculo)}</b></div>
+          </div>
+        </div>
+        <div class="badge">${escapeHtml(v.necessidade || "-")}</div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="small">Detalhes</div>
+        <div style="white-space:pre-wrap; line-height:1.45;">${escapeHtml(v.detalhes || "(sem detalhes na matriz)")}</div>
+      </div>
+    </div>
+  `).join("");
+
+  $("vehiclesBlock").innerHTML = `<div class="grid">${cards}</div>`;
+}
+
+function renderUnits() {
+  const items = DATA.units || [];
+  if (!items.length) {
+    $("unitsBlock").innerHTML = `<div class="empty">Legenda não encontrada na matriz.</div>`;
+    return;
+  }
+  const rows = items.map(u => `
+    <tr>
+      <td class="mono"><b>${escapeHtml(u.sigla)}</b></td>
+      <td>${escapeHtml(u.unidade)}</td>
+      <td>${escapeHtml(u.endereco)}</td>
+    </tr>
+  `).join("");
+
+  $("unitsBlock").innerHTML = `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Sigla</th>
+          <th>Unidade</th>
+          <th>Endereço / Abrangência</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function exportCsv() {
+  const f = currentFilters();
+  let routes = DATA.routes.slice();
+  if (f.car) routes = routes.filter(r => r.operacao === f.car);
+  if (f.vehicle) routes = routes.filter(r => r.veiculo === f.vehicle);
+  if (f.search) {
+    routes = routes.filter(r => normalize([r.periodo, r.setores, r.itinerario, r.abrangencia, r.unidade_enderecos, r.operacao, r.veiculo].join(" | ")).includes(f.search));
+  }
+  if (f.onlyWithDetails) routes = routes.filter(r => hasDetailsFor(r.operacao, r.veiculo));
+
+  const header = ["Operação","Categoria","Veículo","Período","Setores Chaves","Itinerário","Abrangência","Unidade/ Endereços"];
+  const lines = [header.join(";")].concat(routes.map(r => [
+    r.operacao, r.categoria, r.veiculo, r.periodo, r.setores, r.itinerario, r.abrangencia, r.unidade_enderecos
+  ].map(v => `"${(v||"").toString().replaceAll('"','""')}"`).join(";")));
+
+  const blob = new Blob([lines.join("\n")], {type: "text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const stamp = new Date().toISOString().slice(0,10);
+  a.download = `rotas_ac_camargo_${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function init() {
+  $("metaInfo").textContent = `Gerado: ${DATA.meta.generated_on}`;
+
+  // Populate car dropdown
+  const cars = uniq(DATA.routes.map(r => r.operacao).concat(DATA.vehicles.map(v => v.operacao))).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  $("filterCar").innerHTML = `<option value="">(Todas)</option>` + cars.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+  // Initial vehicle list (all)
+  const vAll = uniq(DATA.routes.map(r => r.veiculo).concat(DATA.vehicles.map(v => v.veiculo))).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  $("filterVehicle").innerHTML = `<option value="">(Todos)</option>` + vAll.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+
+  // Events
+  $("filterCar").addEventListener("change", applyFilters);
+  $("filterVehicle").addEventListener("change", applyFilters);
+  $("filterSearch").addEventListener("input", () => {
+    window.clearTimeout(window.__t);
+    window.__t = window.setTimeout(applyFilters, 120);
+  });
+  $("onlyWithDetails").addEventListener("change", applyFilters);
+
+  $("btnClear").addEventListener("click", () => {
+    $("filterCar").value = "";
+    $("filterVehicle").value = "";
+    $("filterSearch").value = "";
+    $("onlyWithDetails").checked = false;
+    applyFilters();
+  });
+
+  $("btnPrint").addEventListener("click", () => window.print());
+  $("btnExport").addEventListener("click", exportCsv);
+
+  renderUnits();
+  applyFilters();
+}
+
+init();
+</script>
+</body>
+</html>
